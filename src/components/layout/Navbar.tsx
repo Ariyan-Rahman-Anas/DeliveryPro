@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button"
 import {
   NavigationMenu,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu"
 import {
@@ -10,10 +9,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Link, NavLink } from "react-router"
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
-  { href: "/", label: "Home"},
+  { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "#", label: "Pricing" },
   { href: "#", label: "About" },
@@ -62,40 +62,26 @@ export default function Navbar() {
             </PopoverTrigger>
             <PopoverContent align="start" className="w-36 p-1 md:hidden">
               <NavigationMenu className="max-w-none *:w-full">
-                <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
-                  {navigationLinks.map((link, index) => (
-                    <NavigationMenuItem key={index} className="w-full">
-                      <NavigationMenuLink
-                        href={link.href}
-                        className="py-1.5"
-                        // active={link.active}
-                      >
-                        {link.label}
-                      </NavigationMenuLink>
-                    </NavigationMenuItem>
-                  ))}
-                </NavigationMenuList>
+                {navigationLinks.map(({ href, label }, index) => (
+                  <NavigationMenuItem key={index} className="w-full">
+                    <NavLink to={href} >{label}</NavLink>
+                  </NavigationMenuItem>
+                ))}
               </NavigationMenu>
             </PopoverContent>
           </Popover>
           {/* Main nav */}
           <div className="flex items-center gap-6">
-            <a href="#" className="text-primary hover:text-primary/90">
+            <Link to="#" className="text-primary hover:text-primary/90">
               {/* <Logo /> */}
               LOGO
-            </a>
+            </Link>
             {/* Navigation menu */}
             <NavigationMenu className="max-md:hidden">
               <NavigationMenuList className="gap-2">
-                {navigationLinks.map((link, index) => (
+                {navigationLinks.map(({ href, label }, index) => (
                   <NavigationMenuItem key={index}>
-                    <NavigationMenuLink
-                      // active={link}
-                      href={link.href}
-                      className="text-muted-foreground hover:text-primary py-1.5 font-medium"
-                    >
-                      {link.label}
-                    </NavigationMenuLink>
+                    <NavLink to={href} >{label}</NavLink>
                   </NavigationMenuItem>
                 ))}
               </NavigationMenuList>
@@ -105,10 +91,10 @@ export default function Navbar() {
         {/* Right side */}
         <div className="flex items-center gap-2">
           <Button asChild variant="ghost" size="sm" className="text-sm">
-            <a href="#">Sign In</a>
+            <Link to="/login">Sign In</Link>
           </Button>
           <Button asChild size="sm" className="text-sm">
-            <a href="#">Get Started</a>
+            <Link to="#">Get Started</Link>
           </Button>
         </div>
       </div>

@@ -12,8 +12,8 @@ const Footer = () => {
             </svg>
           </div>
 
-          <div className="mt-8 grid grid-cols-2 gap-8 lg:mt-0 lg:grid-cols-5 lg:gap-y-16">
-            <div className="col-span-2">
+          <div className="mt-8 grid grid-cols-2 gap-8 lg:mt-0 lg:grid-cols-5 w-full lg:gap-y-16">
+            <div className="col-span-5">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">Get the latest news!</h2>
 
@@ -24,28 +24,8 @@ const Footer = () => {
               </div>
             </div>
 
-            <div className="col-span-2 lg:col-span-3 lg:flex lg:items-end">
-              <form className="w-full">
-                <label htmlFor="UserEmail" className="sr-only"> Email </label>
-
-                <div
-                  className="border border-gray-100 p-2 focus-within:ring-3 sm:flex sm:items-center sm:gap-4"
-                >
-                  <input
-                    type="email"
-                    id="UserEmail"
-                    placeholder="john@rhcp.com"
-                    className="w-full border-none focus:border-transparent focus:ring-transparent sm:text-sm"
-                  />
-
-                  <button
-                    className="mt-1 w-full bg-teal-500 px-6 py-3 text-sm font-bold tracking-wide text-white uppercase transition-none hover:bg-teal-600 sm:mt-0 sm:w-auto sm:shrink-0"
-                  >
-                    Sign Up
-                  </button>
-                </div>
-              </form>
-            </div>
+            {/* <div className="col-span-2 lg:col-span-3 lg:flex lg:items-end bg-red-500">
+            </div> */}
 
             <div className="col-span-2 sm:col-span-1">
               <p className="font-medium text-gray-900">Services</p>
