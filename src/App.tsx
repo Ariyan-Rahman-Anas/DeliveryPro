@@ -6,6 +6,8 @@ const HomePage = lazy(() => import('./pages/HomePage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const RegistrationPage = lazy(() => import('./pages/RegistrationPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+
 const AdminLayout = lazy(
   () => import('./components/modules/layout/AdminLayout')
 );
@@ -20,6 +22,7 @@ const App = createBrowserRouter([
       { path: '/registration', Component: RegistrationPage },
       { path: '/', Component: HomePage },
       { path: '/about', Component: AboutPage },
+      { path: '/contact', Component: ContactPage },
     ],
   },
   {
