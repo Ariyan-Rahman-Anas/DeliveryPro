@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { loggedInUser } from '@/redux/features/auth/authSlice';
+import { loggedInUser, removeUser } from '@/redux/features/auth/authSlice';
 import {
   Package,
   Menu,
@@ -22,13 +22,32 @@ import {
   Search,
 } from 'lucide-react';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { NavLink } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { NavLink, useNavigate } from 'react-router';
+import type { NavLinkPropsI } from '@/types';
+import { useUserLogoutMutation } from '@/redux/features/auth/authApi';
+import { toast } from 'sonner';
 
 const Navbar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
-  const { name, email, role } = useSelector(loggedInUser);
+  const { name, email, role } = useSelector(loggedInUser) || {};
+
+  const [userLogout, { isLoading }] = useUserLogoutMutation();
+
+  const handleLogout = async () => {
+    try {
+      const logoutRes = await userLogout(undefined);
+      dispatch(removeUser());
+      toast.success(logoutRes.data.message);
+      navigate('/login');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error?.data?.message);
+    }
+  };
 
   const toggleMenu = () => setIsOpen(!isOpen);
   // const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
@@ -61,21 +80,13 @@ const Navbar = () => {
     { to: '/logout', label: 'Sign Out' },
   ];
 
-  interface NavLinkProps {
-    to: string;
-    children: React.ReactNode;
-    className?: string;
-    onClick?: () => void;
-    isActive?: boolean;
-  }
-
   // Custom NavLink component with active state
   const CustomNavLink = ({
     to,
     children,
     className = '',
     onClick,
-  }: NavLinkProps) => (
+  }: NavLinkPropsI) => (
     <NavLink
       to={to}
       className={({ isActive }) =>
@@ -90,7 +101,7 @@ const Navbar = () => {
   );
 
   // DropdownItem component
-  const DropdownItem = ({ to, children, onClick }: NavLinkProps) => (
+  const DropdownItem = ({ to, children, onClick }: NavLinkPropsI) => (
     <NavLink
       to={to}
       className={({ isActive }) =>
@@ -107,7 +118,7 @@ const Navbar = () => {
   );
 
   // MobileNavItem component
-  const MobileNavItem = ({ to, children, onClick }: NavLinkProps) => (
+  const MobileNavItem = ({ to, children, onClick }: NavLinkPropsI) => (
     <NavLink
       to={to}
       className={({ isActive }) =>
@@ -249,8 +260,8 @@ const Navbar = () => {
                         </DropdownMenuItem>
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        Log out
+                      <DropdownMenuItem onClick={handleLogout}>
+                        {isLoading ? 'Logging out...' : 'Log out'}
                         <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -333,5 +344,4 @@ const Navbar = () => {
     </nav>
   );
 };
-
 export default Navbar;

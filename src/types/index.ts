@@ -20,3 +20,11 @@ export interface RegistrationFormData {
     password: string
     role: string
 }
+
+export interface NavLinkPropsI {
+    to: string;
+    children: React.ReactNode;
+    className?: string;
+    onClick?: () => void;
+    isActive?: boolean;
+}
