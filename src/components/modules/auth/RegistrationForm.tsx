@@ -24,6 +24,7 @@ const RegistrationForm = () => {
   const handleFormSubmit = async (data: RegistrationFormData) => {
     try {
       const registrationRes = await createUser(data);
+      console.log(registrationRes);
     } catch (error) {
       console.log(error);
     }

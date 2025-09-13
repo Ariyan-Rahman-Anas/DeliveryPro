@@ -1,4 +1,16 @@
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { loggedInUser } from '@/redux/features/auth/authSlice';
+import {
   Package,
   Menu,
   X,
@@ -10,11 +22,13 @@ import {
   Search,
 } from 'lucide-react';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  const { name, email, role } = useSelector(loggedInUser);
 
   const toggleMenu = () => setIsOpen(!isOpen);
   // const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
@@ -196,41 +210,51 @@ const Navbar = () => {
 
             {/* Profile Dropdown */}
             <div className="relative">
-              <NavLink
-                to="/login"
-                className={({ isActive }) =>
-                  `duration-300 block p-2 rounded-md border transition-colors ${
-                    isActive
-                      ? 'bg-primary/20 border-primary'
-                      : 'bg-gray-800 border-transparent hover:border-primary hover:bg-gray-700'
-                  }`
-                }
-              >
-                <User size={25} className="text-primary" />
-              </NavLink>
-
-              {isProfileOpen && (
-                <div className="absolute right-0 top-full mt-2 bg-white text-black rounded-lg shadow-xl py-2 min-w-48 z-50">
-                  {profileItems.map((item, index) =>
-                    item.divider ? (
-                      <hr key={index} className="my-2 border-gray-200" />
-                    ) : (
-                      <NavLink
-                        key={index}
-                        to={item.to || ''}
-                        className={({ isActive }) =>
-                          `block px-4 py-2 transition-colors ${
-                            isActive
-                              ? 'bg-gray-100 text-primary'
-                              : 'hover:bg-gray-100'
-                          }`
-                        }
-                        onClick={() => setIsProfileOpen(false)}
-                      >
-                        {item.label}
-                      </NavLink>
-                    )
-                  )}
+              {!name && !email ? (
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    `duration-300 block p-2 rounded-md border transition-colors ${
+                      isActive
+                        ? 'bg-primary/20 border-primary'
+                        : 'bg-gray-800 border-transparent hover:border-primary hover:bg-gray-700'
+                    }`
+                  }
+                >
+                  <User size={25} className="text-primary" />
+                </NavLink>
+              ) : (
+                <div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarFallback>CN</AvatarFallback>
+                      </Avatar>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="start">
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem>
+                          Profile
+                          <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          Billing
+                          <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          Settings
+                          <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        Log out
+                        <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               )}
             </div>

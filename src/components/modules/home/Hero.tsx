@@ -4,7 +4,7 @@ import {
   Clock,
   MapPin,
   Package,
-  Shield,
+  ShieldCheck,
   Truck,
 } from 'lucide-react';
 
@@ -85,7 +85,7 @@ const Hero = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Shield className="w-8 h-8 text-primary" />
+                  <ShieldCheck className="w-8 h-8 text-primary" />
                   <span className="text-lg font-semibold">
                     Secure & Insured
                   </span>
