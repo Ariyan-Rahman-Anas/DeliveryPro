@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -9,25 +10,55 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import PasswordField from './PasswordField';
 import { useForm } from 'react-hook-form';
 import type { RegistrationFormData } from '@/types';
 import { useCreateUserMutation } from '@/redux/features/auth/authApi';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
 const RegistrationForm = () => {
-  const { register, handleSubmit } = useForm<RegistrationFormData>();
+  const navigate = useNavigate();
+  const { register, handleSubmit, setValue } = useForm<RegistrationFormData>();
+  const [selectedRole, setSelectedRole] = useState('SENDER');
 
   const [createUser, { isLoading }] = useCreateUserMutation();
 
   const handleFormSubmit = async (data: RegistrationFormData) => {
+    const formData = {
+      ...data,
+      role: selectedRole,
+    };
+
     try {
-      const registrationRes = await createUser(data);
-      console.log(registrationRes);
-    } catch (error) {
-      console.log(error);
+      const registrationRes = await createUser(formData).unwrap();
+      toast.success(registrationRes?.message);
+      navigate('/login');
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null) {
+        const err = error as {
+          data?: { errorSources?: Array<{ message?: string }> };
+          status?: string | number;
+        };
+        if (err.data?.errorSources?.[0]?.message) {
+          toast.error(err.data.errorSources[0].message);
+        } else if ((err as any)?.data?.message) {
+          toast.error((err as any)?.data?.message);
+        } else {
+          toast.error('An unexpected error occurred');
+        }
+      } else {
+        toast.error('An unexpected error occurred');
+      }
     }
+  };
+
+  // Handle role selection
+  const handleRoleChange = (value: string) => {
+    setSelectedRole(value);
+    setValue('role', value as 'SENDER' | 'RECEIVER');
   };
 
   return (
@@ -48,14 +79,26 @@ const RegistrationForm = () => {
       <CardContent>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
           <div className="flex flex-col gap-6">
-            <RadioGroup defaultValue="option-one">
+            <RadioGroup
+              value={selectedRole}
+              onValueChange={handleRoleChange}
+              className="flex items-center gap-6"
+            >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="option-one" id="option-one" />
-                <Label htmlFor="option-one">Option One</Label>
+                <RadioGroupItem
+                  value="SENDER"
+                  id="sender"
+                  className="border border-primary"
+                />
+                <Label htmlFor="sender">Sender</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="option-two" id="option-two" />
-                <Label htmlFor="option-two">Option Two</Label>
+                <RadioGroupItem
+                  value="RECEIVER"
+                  id="receiver"
+                  className="border border-primary"
+                />
+                <Label htmlFor="receiver">Receiver</Label>
               </div>
             </RadioGroup>
             <div className="grid gap-2">
@@ -93,5 +136,4 @@ const RegistrationForm = () => {
     </Card>
   );
 };
-
 export default RegistrationForm;
