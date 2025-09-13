@@ -1,4 +1,16 @@
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { loggedInUser, removeUser } from '@/redux/features/auth/authSlice';
+import {
   Package,
   Menu,
   X,
@@ -10,11 +22,32 @@ import {
   Search,
 } from 'lucide-react';
 import { useState } from 'react';
-import { NavLink } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { NavLink, useNavigate } from 'react-router';
+import type { NavLinkPropsI } from '@/types';
+import { useUserLogoutMutation } from '@/redux/features/auth/authApi';
+import { toast } from 'sonner';
 
 const Navbar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  const { name, email, role } = useSelector(loggedInUser) || {};
+
+  const [userLogout, { isLoading }] = useUserLogoutMutation();
+
+  const handleLogout = async () => {
+    try {
+      const logoutRes = await userLogout(undefined);
+      dispatch(removeUser());
+      toast.success(logoutRes.data.message);
+      navigate('/login');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error?.data?.message);
+    }
+  };
 
   const toggleMenu = () => setIsOpen(!isOpen);
   // const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
@@ -47,21 +80,13 @@ const Navbar = () => {
     { to: '/logout', label: 'Sign Out' },
   ];
 
-  interface NavLinkProps {
-    to: string;
-    children: React.ReactNode;
-    className?: string;
-    onClick?: () => void;
-    isActive?: boolean;
-  }
-
   // Custom NavLink component with active state
   const CustomNavLink = ({
     to,
     children,
     className = '',
     onClick,
-  }: NavLinkProps) => (
+  }: NavLinkPropsI) => (
     <NavLink
       to={to}
       className={({ isActive }) =>
@@ -76,7 +101,7 @@ const Navbar = () => {
   );
 
   // DropdownItem component
-  const DropdownItem = ({ to, children, onClick }: NavLinkProps) => (
+  const DropdownItem = ({ to, children, onClick }: NavLinkPropsI) => (
     <NavLink
       to={to}
       className={({ isActive }) =>
@@ -93,7 +118,7 @@ const Navbar = () => {
   );
 
   // MobileNavItem component
-  const MobileNavItem = ({ to, children, onClick }: NavLinkProps) => (
+  const MobileNavItem = ({ to, children, onClick }: NavLinkPropsI) => (
     <NavLink
       to={to}
       className={({ isActive }) =>
@@ -196,41 +221,51 @@ const Navbar = () => {
 
             {/* Profile Dropdown */}
             <div className="relative">
-              <NavLink
-                to="/login"
-                className={({ isActive }) =>
-                  `duration-300 block p-2 rounded-md border transition-colors ${
-                    isActive
-                      ? 'bg-primary/20 border-primary'
-                      : 'bg-gray-800 border-transparent hover:border-primary hover:bg-gray-700'
-                  }`
-                }
-              >
-                <User size={25} className="text-primary" />
-              </NavLink>
-
-              {isProfileOpen && (
-                <div className="absolute right-0 top-full mt-2 bg-white text-black rounded-lg shadow-xl py-2 min-w-48 z-50">
-                  {profileItems.map((item, index) =>
-                    item.divider ? (
-                      <hr key={index} className="my-2 border-gray-200" />
-                    ) : (
-                      <NavLink
-                        key={index}
-                        to={item.to || ''}
-                        className={({ isActive }) =>
-                          `block px-4 py-2 transition-colors ${
-                            isActive
-                              ? 'bg-gray-100 text-primary'
-                              : 'hover:bg-gray-100'
-                          }`
-                        }
-                        onClick={() => setIsProfileOpen(false)}
-                      >
-                        {item.label}
-                      </NavLink>
-                    )
-                  )}
+              {!name && !email ? (
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    `duration-300 block p-2 rounded-md border transition-colors ${
+                      isActive
+                        ? 'bg-primary/20 border-primary'
+                        : 'bg-gray-800 border-transparent hover:border-primary hover:bg-gray-700'
+                    }`
+                  }
+                >
+                  <User size={25} className="text-primary" />
+                </NavLink>
+              ) : (
+                <div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarFallback>CN</AvatarFallback>
+                      </Avatar>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="start">
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem>
+                          Profile
+                          <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          Billing
+                          <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          Settings
+                          <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleLogout}>
+                        {isLoading ? 'Logging out...' : 'Log out'}
+                        <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               )}
             </div>
@@ -309,5 +344,4 @@ const Navbar = () => {
     </nav>
   );
 };
-
 export default Navbar;
