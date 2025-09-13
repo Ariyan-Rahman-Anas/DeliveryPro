@@ -10,28 +10,34 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useUserLoginMutation } from "@/redux/features/auth/authApi"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { useForm } from "react-hook-form"
 import PasswordField from "./PasswordField"
-
-interface LoginFormData {
-    email: string
-    password: string
-}
+import { toast } from "sonner"
+import { useDispatch } from "react-redux"
+import { setUser } from "@/redux/features/auth/authSlice"
+import type { LoginFormData } from "@/types"
 
 const LoginForm = () => {
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
     const { register, handleSubmit } = useForm<LoginFormData>()
 
     const [userLogin, { isLoading }] = useUserLoginMutation()
 
     const handleFormSubmit = async (data: LoginFormData) => {
-        console.log(data) // Now this will include both email and password
-        // userLogin(data) // Uncomment when ready to use
+        console.log(data)
 
         try {
             const loginRes = await userLogin(data).unwrap()
             console.log({ loginRes })
-        } catch (error) {
+            if (loginRes.success) {
+                toast.success(loginRes?.message)
+                dispatch(setUser(loginRes.data))
+                navigate("/")
+            }
+        } catch (error: any) {
+            toast.error(error?.data?.message)
             console.log({ error })
         }
     }
@@ -39,9 +45,9 @@ const LoginForm = () => {
     return (
         <Card className="w-full max-w-sm">
             <CardHeader>
-                <CardTitle>Login to your account</CardTitle>
+                <CardTitle>Welcome Back</CardTitle>
                 <CardDescription>
-                    Enter your email below to login to your account
+                    Enter your credentials to login to your account.
                 </CardDescription>
                 <CardAction>
                     <Link to="/registration">
