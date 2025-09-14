@@ -33,7 +33,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
-  const { name, email, role } = useSelector(loggedInUser) || {};
+  const { name, email } = useSelector(loggedInUser) || {};
 
   const [userLogout, { isLoading }] = useUserLogoutMutation();
 
@@ -72,15 +72,16 @@ const Navbar = () => {
     { to: '/contact', label: 'Contact' },
   ];
 
-  const profileItems = [
-    { to: '/account', label: 'My Account' },
-    { to: '/orders', label: 'My Orders' },
-    { to: '/settings', label: 'Settings' },
-    { divider: true },
-    { to: '/logout', label: 'Sign Out' },
-  ];
+  // const profileItems = [
+  //   { to: '/account', label: 'My Account' },
+  //   { to: '/orders', label: 'My Orders' },
+  //   { to: '/settings', label: 'Settings' },
+  //   { divider: true },
+  //   { to: '/logout', label: 'Sign Out' },
+  // ];
 
   // Custom NavLink component with active state
+
   const CustomNavLink = ({
     to,
     children,
@@ -90,8 +91,7 @@ const Navbar = () => {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `font-medium transition-colors duration-300 ${className} ${
-          isActive ? 'text-primary' : 'text-white hover:text-primary'
+        `font-medium transition-colors duration-300 ${className} ${isActive ? 'text-primary' : 'text-white hover:text-primary'
         }`
       }
       onClick={onClick}
@@ -105,10 +105,9 @@ const Navbar = () => {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `block px-4 py-2 transition-colors ${
-          isActive
-            ? 'bg-primary/10 text-primary'
-            : 'hover:bg-primary/5 hover:text-primary'
+        `block px-4 py-2 transition-colors ${isActive
+          ? 'bg-primary/10 text-primary'
+          : 'hover:bg-primary/5 hover:text-primary'
         }`
       }
       onClick={onClick}
@@ -122,10 +121,9 @@ const Navbar = () => {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `block px-2 py-3 rounded-lg transition-colors duration-300 ${
-          isActive
-            ? 'bg-primary/20 text-primary'
-            : 'text-white hover:text-primary hover:bg-gray-800'
+        `block px-2 py-3 rounded-lg transition-colors duration-300 ${isActive
+          ? 'bg-primary/20 text-primary'
+          : 'text-white hover:text-primary hover:bg-gray-800'
         }`
       }
       onClick={onClick}
@@ -169,22 +167,35 @@ const Navbar = () => {
       </div>
 
       {/* Main Navbar */}
-      <div className="container mx-auto px-4 pt-2">
+      <div className="container mx-auto px-2 pt-2">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <NavLink to="/" className="flex items-center gap-3">
-            {() => (
-              <>
-                <div className="bg-primary p-2 rounded-lg">
-                  <Package className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold">DeliveryPro</h1>
-                  <p className="text-xs text-gray-400">Fast & Secure</p>
-                </div>
-              </>
-            )}
-          </NavLink>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleMenu}
+              className="lg:hidden p2 rounded-lg hover:bg-gray-800 transition-colors duration-300"
+            >
+              {isOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+
+            {/* Logo */}
+            <NavLink to="/" className="flex items-center gap-1.5">
+              {() => (
+                <>
+                  <div className="bg-primary p-2 rounded-lg">
+                    <Package className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-bold">DeliveryPro</h1>
+                    <p className="text-sm text-gray-300/95">Fast & Secure</p>
+                  </div>
+                </>
+              )}
+            </NavLink>
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
@@ -225,10 +236,9 @@ const Navbar = () => {
                 <NavLink
                   to="/login"
                   className={({ isActive }) =>
-                    `duration-300 block p-2 rounded-md border transition-colors ${
-                      isActive
-                        ? 'bg-primary/20 border-primary'
-                        : 'bg-gray-800 border-transparent hover:border-primary hover:bg-gray-700'
+                    `duration-300 block p-2 rounded-md border transition-colors ${isActive
+                      ? 'bg-primary/20 border-primary'
+                      : 'bg-gray-800 border-transparent hover:border-primary hover:bg-gray-700'
                     }`
                   }
                 >
@@ -248,21 +258,17 @@ const Navbar = () => {
                       <DropdownMenuGroup>
                         <DropdownMenuItem>
                           Profile
-                          <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                          Billing
-                          <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                          Dashboard
                         </DropdownMenuItem>
                         <DropdownMenuItem>
                           Settings
-                          <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
                         </DropdownMenuItem>
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={handleLogout}>
                         {isLoading ? 'Logging out...' : 'Log out'}
-                        <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -271,20 +277,57 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={toggleMenu}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-800 transition-colors duration-300"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          <div className="relative lg:hidden">
+            {!name && !email ? (
+              <NavLink
+                to="/login"
+                className={({ isActive }) =>
+                  `duration-300 block p-2 rounded-md border transition-colors ${isActive
+                    ? 'bg-primary/20 border-primary'
+                    : 'bg-gray-800 border-transparent hover:border-primary hover:bg-gray-700'
+                  }`
+                }
+              >
+                <User size={25} className="text-primary" />
+              </NavLink>
+            ) : (
+              <div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="border-2 border-primary">
+                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="start">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        Dashboard
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        Settings
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout}>
+                      {isLoading ? 'Logging out...' : 'Log out'}
+                      <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Mobile Navigation */}
         <div
-          className={`lg:hidden transition-all duration-300 overflow-hidden ${
-            isOpen ? 'max-h-96 pb-4' : 'max-h-0'
-          }`}
+          className={`lg:hidden transition-all duration-300 overflow-hidden ${isOpen ? 'max-h-96 pb-4' : 'max-h-0'
+            }`}
         >
           <div className="space-y-1 pt-4 border-t border-gray-800">
             {/* Mobile Search */}
@@ -327,10 +370,9 @@ const Navbar = () => {
               <NavLink
                 to="/ship-now"
                 className={({ isActive }) =>
-                  `block w-full py-3 rounded-lg font-semibold transition-colors duration-300 text-center ${
-                    isActive
-                      ? 'bg-primary/80 text-white'
-                      : 'bg-primary text-white hover:bg-primary/90'
+                  `block w-full py-3 rounded-lg font-semibold transition-colors duration-300 text-center ${isActive
+                    ? 'bg-primary/80 text-white'
+                    : 'bg-primary text-white hover:bg-primary/90'
                   }`
                 }
                 onClick={() => setIsOpen(false)}
