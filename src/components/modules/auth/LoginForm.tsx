@@ -28,7 +28,6 @@ const LoginForm = () => {
   const handleFormSubmit = async (data: LoginFormData) => {
     try {
       const loginRes = await userLogin(data).unwrap();
-      console.log({ loginRes });
       if (loginRes.success) {
         toast.success(loginRes?.message);
         dispatch(setUser(loginRes.data));
@@ -37,7 +36,6 @@ const LoginForm = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error?.data?.message);
-      console.log({ error });
     }
   };
 
@@ -79,5 +77,4 @@ const LoginForm = () => {
     </Card>
   );
 };
-
 export default LoginForm;
