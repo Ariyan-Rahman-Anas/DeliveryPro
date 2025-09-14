@@ -8,8 +8,8 @@ const RegistrationPage = lazy(() => import('./pages/RegistrationPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 
-const AdminLayout = lazy(
-  () => import('./components/modules/layout/AdminLayout')
+const DashboardLayout = lazy(
+  () => import('./components/modules/layout/DashboardLayout')
 );
 
 const App = createBrowserRouter([
@@ -26,8 +26,25 @@ const App = createBrowserRouter([
     ],
   },
   {
-    path: '/admin',
-    Component: AdminLayout,
+    path: '/dashboard/admin',
+    Component: DashboardLayout,
+    children: [
+      { path: 'a', Component: HomePage },
+    ],
+  },
+  {
+    path: '/dashboard/sender',
+    Component: DashboardLayout,
+    children: [
+      { path: '/dashboard/sender', Component: HomePage },
+    ],
+  },
+  {
+    path: '/dashboard/receiver',
+    Component: DashboardLayout,
+    children: [
+      { path: '/dashboard/receiver', Component: HomePage },
+    ],
   },
 ]);
 export default App;
