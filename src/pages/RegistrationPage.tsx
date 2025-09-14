@@ -1,6 +1,10 @@
+import RegistrationForm from '@/components/modules/auth/RegistrationForm';
+
 const RegistrationPage = () => {
   return (
-    <div>RegistrationPage</div>
-  )
-}
-export default RegistrationPage
+    <div className="py-12 flex items-center justify-center">
+      <RegistrationForm />
+    </div>
+  );
+};
+export default RegistrationPage;
