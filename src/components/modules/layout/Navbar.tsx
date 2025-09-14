@@ -11,7 +11,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { loggedInUser, removeUser } from '@/redux/features/auth/authSlice';
 import {
-  Package,
   Menu,
   X,
   Phone,
@@ -23,17 +22,20 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { NavLink, useNavigate } from 'react-router';
+import { Link, NavLink, useNavigate } from 'react-router';
 import type { NavLinkPropsI } from '@/types';
 import { useUserLogoutMutation } from '@/redux/features/auth/authApi';
 import { toast } from 'sonner';
+import Logo from '@/components/common/Logo';
+import { Role } from '@/constants';
+import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
-  const { name, email } = useSelector(loggedInUser) || {};
+  const { name, email, role } = useSelector(loggedInUser) || {};
 
   const [userLogout, { isLoading }] = useUserLogoutMutation();
 
@@ -72,13 +74,11 @@ const Navbar = () => {
     { to: '/contact', label: 'Contact' },
   ];
 
-  // const profileItems = [
-  //   { to: '/account', label: 'My Account' },
-  //   { to: '/orders', label: 'My Orders' },
-  //   { to: '/settings', label: 'Settings' },
-  //   { divider: true },
-  //   { to: '/logout', label: 'Sign Out' },
-  // ];
+  const profileItems = [
+    { to: '/account', label: 'My Account' },
+    { to: `${role === Role.ADMIN ? '/dashboard/admin' : role === Role.SENDER ? '/dashboard/sender' : role === Role.RECEIVER ? '/dashboard/receiver' : ''}`, label: 'Dashboard' },
+    { divider: true },
+  ];
 
   // Custom NavLink component with active state
 
@@ -182,19 +182,7 @@ const Navbar = () => {
             </button>
 
             {/* Logo */}
-            <NavLink to="/" className="flex items-center gap-1.5">
-              {() => (
-                <>
-                  <div className="bg-primary p-2 rounded-lg">
-                    <Package className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <h1 className="text-xl font-bold">DeliveryPro</h1>
-                    <p className="text-sm text-gray-300/95">Fast & Secure</p>
-                  </div>
-                </>
-              )}
-            </NavLink>
+            <Logo />
           </div>
 
           {/* Desktop Navigation */}
@@ -254,21 +242,20 @@ const Navbar = () => {
                       </Avatar>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="start">
-                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
                       <DropdownMenuGroup>
-                        <DropdownMenuItem>
-                          Profile
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          Dashboard
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          Settings
-                        </DropdownMenuItem>
+                        {
+                          profileItems.map((item, index) => (
+                            <DropdownMenuItem key={index}>
+                              <Link to={item.to || ''}>{item.label}</Link>
+                            </DropdownMenuItem>
+                          ))
+                        }
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleLogout}>
-                        {isLoading ? 'Logging out...' : 'Log out'}
+                      <DropdownMenuItem onClick={handleLogout} className='p-0'>
+                        <Button variant="destructive" className='w-full cursor-pointer'>
+                          {isLoading ? 'Logging out...' : 'Log out'}
+                        </Button>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

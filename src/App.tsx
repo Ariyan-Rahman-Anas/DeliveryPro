@@ -11,6 +11,15 @@ const ContactPage = lazy(() => import('./pages/ContactPage'));
 const DashboardLayout = lazy(
   () => import('./components/modules/layout/DashboardLayout')
 );
+const ParcelCreatePage = lazy(
+  () => import('./pages/dashboard/sender/ParcelCreatePage')
+);
+const AllParcelsPage = lazy(
+  () => import('./pages/dashboard/admin/AllParcelsPage')
+);
+const MyParcelsPage = lazy(
+  () => import('./pages/dashboard/receiver/MyParcelsPage')
+);
 
 const App = createBrowserRouter([
   {
@@ -29,21 +38,21 @@ const App = createBrowserRouter([
     path: '/dashboard/admin',
     Component: DashboardLayout,
     children: [
-      { path: 'a', Component: HomePage },
+      { path: 'parcels', Component: AllParcelsPage },
     ],
   },
   {
     path: '/dashboard/sender',
     Component: DashboardLayout,
     children: [
-      { path: '/dashboard/sender', Component: HomePage },
+      { path: 'parcels/create', Component: ParcelCreatePage },
     ],
   },
   {
     path: '/dashboard/receiver',
     Component: DashboardLayout,
     children: [
-      { path: '/dashboard/receiver', Component: HomePage },
+      { path: 'my-parcels', Component: MyParcelsPage },
     ],
   },
 ]);
