@@ -24,13 +24,13 @@ const ParcelCreateForm = () => {
     const [type, setType] = useState("")
     const [receiverUserId, setReceiverUserId] = useState("")
 
-    const { _id: id, name: loggedSenderName } = useSelector(loggedInUser)
+    const loggedInSender = useSelector(loggedInUser)
 
     const { register, handleSubmit, reset } = useForm()
 
     const { data: userData } = useGetAllUserQuery(undefined)
     const [createParcel, { isLoading: isCreating }] = useCreateParcelMutation()
-    const allReceivers = userData?.data?.filter((user: any) => user._id !== id && user.role === Role.RECEIVER)
+    const allReceivers = userData?.data?.filter((user: any) => user._id !== loggedInSender?._id && user.role === Role.RECEIVER)
 
     const handleFormSubmit = async (data: any) => {
         const parcelData = {
@@ -38,7 +38,7 @@ const ParcelCreateForm = () => {
             weightKg: parseFloat(data.weight),
             fee: parseFloat(data.fee),
             sender: {
-                user: id,
+                user: loggedInSender?._id,
                 snapshot: {
                     name: data.senderName,
                     phone: data.senderPhone,
@@ -128,7 +128,7 @@ const ParcelCreateForm = () => {
                     </CardHeader>
                     <CardContent className="flex flex-col md:flex-row items-center gap-4">
                         <div>
-                            <p>Your are "{loggedSenderName}", going to send a parcel to</p>
+                            <p>Your are "{loggedInSender?.name}", going to send a parcel to</p>
                         </div>
                         <Select onValueChange={(value) => setReceiverUserId(value)} value={receiverUserId}>
                             <SelectTrigger className="w-[180px]">
