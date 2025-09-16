@@ -20,6 +20,9 @@ const AllParcelsPage = lazy(
 const MyParcelsPage = lazy(
   () => import('./pages/dashboard/receiver/MyParcelsPage')
 );
+const MySentParcelsPage = lazy(
+  () => import('./pages/dashboard/sender/MySentParcelsPage')
+);
 
 const App = createBrowserRouter([
   {
@@ -37,23 +40,20 @@ const App = createBrowserRouter([
   {
     path: '/dashboard/admin',
     Component: DashboardLayout,
-    children: [
-      { path: 'parcels', Component: AllParcelsPage },
-    ],
+    children: [{ path: 'parcels', Component: AllParcelsPage }],
   },
   {
     path: '/dashboard/sender',
     Component: DashboardLayout,
     children: [
       { path: 'parcels/create', Component: ParcelCreatePage },
+      { path: 'parcels', Component: MySentParcelsPage },
     ],
   },
   {
     path: '/dashboard/receiver',
     Component: DashboardLayout,
-    children: [
-      { path: 'my-parcels', Component: MyParcelsPage },
-    ],
+    children: [{ path: 'my-parcels', Component: MyParcelsPage }],
   },
 ]);
 export default App;
