@@ -19,3 +19,4 @@ export const ParcelStatus = {
 }
 
 export const parcelCancellableStatus = ["REQUESTED", "APPROVED", "PICKUP_SCHEDULED"]
+export const parcelDeliverStatus = ["IN_TRANSIT", "OUT_FOR_DELIVERY"]

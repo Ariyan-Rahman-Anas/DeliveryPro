@@ -10,32 +10,26 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { parcelCancellableStatus, ParcelStatus } from '@/constants';
+import { parcelDeliverStatus, ParcelStatus } from '@/constants';
 import { loggedInUser } from '@/redux/features/auth/authSlice';
 import {
-  useGetParcelsBySenderIdQuery,
-  useParcelCancellationMutation,
+  useConfirmParcelDeliveryMutation,
+  useGetParcelsByReceiverIdQuery,
 } from '@/redux/features/parcels/parcelApi';
 import { formatStatusLabel } from '@/utils/formatStatusLabel';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 
-const SenderParcelsTable = () => {
+const ReceiverParcelsTable = () => {
   const loggedInSender = useSelector(loggedInUser);
   const [currentPage, setCurrentPage] = useState(1);
   const dataLimitOnPerPage = 8;
   const [statusFilter, setStatusFilter] = useState('');
   const [parcelId, setParcelId] = useState('');
 
-  const { register, reset, handleSubmit } = useForm();
-
   const { data: parcelsData, isLoading: isParcelsLoading } =
-    useGetParcelsBySenderIdQuery(
+    useGetParcelsByReceiverIdQuery(
       {
         id: loggedInSender?._id,
         page: currentPage,
@@ -47,20 +41,13 @@ const SenderParcelsTable = () => {
       }
     );
 
-  const [parcelCancellation, { isLoading: isCancelling }] =
-    useParcelCancellationMutation();
+  const [confirmParcelDelivery, { isLoading: isConfirming }] =
+    useConfirmParcelDeliveryMutation();
 
-  const handleCancelParcel = async (data: any) => {
-    const parcelCancellationData = {
-      id: parcelId,
-      cancelReason: data,
-    };
+  const handleConfirmParcelDelivery = async () => {
     try {
-      const parcelCancelRes = await parcelCancellation(
-        parcelCancellationData
-      ).unwrap();
-      toast.success(parcelCancelRes?.message);
-      reset();
+      const confirmRes = await confirmParcelDelivery(parcelId).unwrap();
+      toast.success(confirmRes?.message);
     } catch (error: any) {
       toast.error(error?.data?.message);
     }
@@ -139,64 +126,75 @@ const SenderParcelsTable = () => {
       header: 'Action',
       className: 'text-center',
       render: (parcel: any) => {
-        const isCancellable = parcelCancellableStatus.find(
+        const isReadyToDelivery = parcelDeliverStatus.find(
           (i) => i === parcel.status
         );
 
         return (
           <div className="flex items-center justify-center">
-            {isCancellable ? (
+            {isReadyToDelivery ? (
               <Dialog>
                 <DialogTrigger asChild>
                   <Button
                     variant="outline"
                     type="button"
-                    className="bg-destructive/20"
+                    className="bg-primary text-white"
                     onClick={() => setParcelId(parcel?._id)}
                   >
-                    Cancel
+                    Confirm
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
-                    <DialogTitle>Parcel Cancellation</DialogTitle>
+                    <DialogTitle>Parcel Delivery Confirmation</DialogTitle>
                     <DialogDescription>
-                      Please make sure your action and enter a reason below
+                      Please make sure your action and check everything you
+                      need.
                     </DialogDescription>
                   </DialogHeader>
-                  <form onSubmit={handleSubmit(handleCancelParcel)}>
-                    <div className="grid gap-1.5">
-                      <Label htmlFor="cancelReason">Cancel Reason</Label>
-                      <Input
-                        id="cancelReason"
-                        {...register('cancelReason', { required: true })}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between mt-8">
-                      <DialogClose asChild>
-                        <Button variant="outline" disabled={isCancelling}>
-                          Cancel
-                        </Button>
-                      </DialogClose>
-                      <Button
-                        variant="destructive"
-                        type="submit"
-                        disabled={isCancelling}
-                      >
-                        Confirm
+                  <div className="flex items-center justify-between mt-8">
+                    <DialogClose asChild>
+                      <Button variant="outline" disabled={isConfirming}>
+                        Cancel
                       </Button>
-                    </div>
-                  </form>
+                    </DialogClose>
+                    <Button
+                      variant="destructive"
+                      type="submit"
+                      disabled={isConfirming}
+                      onClick={handleConfirmParcelDelivery}
+                    >
+                      Confirm
+                    </Button>
+                  </div>
                 </DialogContent>
               </Dialog>
+            ) : parcel.status === 'DELIVERED' ? (
+              <Button
+                variant="outline"
+                type="button"
+                disabled={true}
+                className="bg-primary"
+              >
+                Confirmed
+              </Button>
+            ) : parcel.status === 'CANCELLED' ? (
+              <Button
+                variant="outline"
+                type="button"
+                disabled={true}
+                className="bg-destructive text-white  "
+              >
+                Cancelled
+              </Button>
             ) : (
               <Button
                 variant="outline"
                 type="button"
                 disabled={true}
-                className="bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-30"
+                className="bg-primary"
               >
-                Cancel
+                A Step Away
               </Button>
             )}
           </div>
@@ -252,4 +250,5 @@ const SenderParcelsTable = () => {
     </div>
   );
 };
-export default SenderParcelsTable;
+
+export default ReceiverParcelsTable;

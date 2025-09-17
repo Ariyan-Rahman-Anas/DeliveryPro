@@ -23,6 +23,9 @@ const MyParcelsPage = lazy(
 const MySentParcelsPage = lazy(
   () => import('./pages/dashboard/sender/MySentParcelsPage')
 );
+const ReceiverOverviewPage = lazy(
+  () => import('./pages/dashboard/receiver/ReceiverOverviewPage')
+);
 
 const App = createBrowserRouter([
   {
@@ -53,7 +56,10 @@ const App = createBrowserRouter([
   {
     path: '/dashboard/receiver',
     Component: DashboardLayout,
-    children: [{ path: 'my-parcels', Component: MyParcelsPage }],
+    children: [
+      { path: 'overview', Component: ReceiverOverviewPage },
+      { path: 'my-parcels', Component: MyParcelsPage },
+    ],
   },
 ]);
 export default App;
