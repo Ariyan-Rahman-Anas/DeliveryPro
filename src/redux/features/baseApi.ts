@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { config } from "@/config"
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { removeUser } from "./auth/authSlice"
@@ -8,7 +9,7 @@ const baseQuery = fetchBaseQuery({
     credentials: "include"
 })
 
-const baseQueryWithReauth = async (arg, api, extraOptions) => {
+const baseQueryWithReauth = async (arg: any, api: any, extraOptions: any) => {
     const result = await baseQuery(arg, api, extraOptions)
 
     if (result.error) {
@@ -16,7 +17,7 @@ const baseQueryWithReauth = async (arg, api, extraOptions) => {
         if (
             status === 401 ||
             status === 403 ||
-            (data?.success === false && data?.message === "jwt expired")
+            ((data as any)?.success === false && (data as any)?.message === "jwt expired")
         ) {
 
             toast.error("Your session has expired. Please login again.");

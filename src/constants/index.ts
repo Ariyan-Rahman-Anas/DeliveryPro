@@ -17,3 +17,5 @@ export const ParcelStatus = {
     RETURN_REQUESTED: "RETURN_REQUESTED",
     RETURNED: "RETURNED"
 }
+
+export const parcelCancellableStatus = ["REQUESTED", "APPROVED", "PICKUP_SCHEDULED"]
