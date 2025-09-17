@@ -1,7 +1,10 @@
-const MyParcelsPage = () => {
-    return (
-        <div>MyParcelsPage</div>
-    )
-}
+import ReceiverParcelsTable from '@/components/modules/dashboard/receiver/ReceiverParcelsTable';
 
-export default MyParcelsPage
+const MyParcelsPage = () => {
+  return (
+    <div>
+      <ReceiverParcelsTable />
+    </div>
+  );
+};
+export default MyParcelsPage;

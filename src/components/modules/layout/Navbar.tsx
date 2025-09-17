@@ -3,9 +3,7 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -75,8 +73,18 @@ const Navbar = () => {
   ];
 
   const profileItems = [
-    { to: '/account', label: 'My Account' },
-    { to: `${role === Role.ADMIN ? '/dashboard/admin' : role === Role.SENDER ? '/dashboard/sender' : role === Role.RECEIVER ? '/dashboard/receiver' : ''}`, label: 'Dashboard' },
+    {
+      to: `${
+        role === Role.ADMIN
+          ? '/dashboard/admin/overview'
+          : role === Role.SENDER
+          ? '/dashboard/sender/overview'
+          : role === Role.RECEIVER
+          ? '/dashboard/receiver/overview'
+          : ''
+      }`,
+      label: 'Dashboard',
+    },
     { divider: true },
   ];
 
@@ -91,7 +99,8 @@ const Navbar = () => {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `font-medium transition-colors duration-300 ${className} ${isActive ? 'text-primary' : 'text-white hover:text-primary'
+        `font-medium transition-colors duration-300 ${className} ${
+          isActive ? 'text-primary' : 'text-white hover:text-primary'
         }`
       }
       onClick={onClick}
@@ -105,9 +114,10 @@ const Navbar = () => {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `block px-4 py-2 transition-colors ${isActive
-          ? 'bg-primary/10 text-primary'
-          : 'hover:bg-primary/5 hover:text-primary'
+        `block px-4 py-2 transition-colors ${
+          isActive
+            ? 'bg-primary/10 text-primary'
+            : 'hover:bg-primary/5 hover:text-primary'
         }`
       }
       onClick={onClick}
@@ -121,9 +131,10 @@ const Navbar = () => {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `block px-2 py-3 rounded-lg transition-colors duration-300 ${isActive
-          ? 'bg-primary/20 text-primary'
-          : 'text-white hover:text-primary hover:bg-gray-800'
+        `block px-2 py-3 rounded-lg transition-colors duration-300 ${
+          isActive
+            ? 'bg-primary/20 text-primary'
+            : 'text-white hover:text-primary hover:bg-gray-800'
         }`
       }
       onClick={onClick}
@@ -224,9 +235,10 @@ const Navbar = () => {
                 <NavLink
                   to="/login"
                   className={({ isActive }) =>
-                    `duration-300 block p-2 rounded-md border transition-colors ${isActive
-                      ? 'bg-primary/20 border-primary'
-                      : 'bg-gray-800 border-transparent hover:border-primary hover:bg-gray-700'
+                    `duration-300 block p-2 rounded-md border transition-colors ${
+                      isActive
+                        ? 'bg-primary/20 border-primary'
+                        : 'bg-gray-800 border-transparent hover:border-primary hover:bg-gray-700'
                     }`
                   }
                 >
@@ -243,17 +255,18 @@ const Navbar = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="start">
                       <DropdownMenuGroup>
-                        {
-                          profileItems.map((item, index) => (
-                            <DropdownMenuItem key={index}>
-                              <Link to={item.to || ''}>{item.label}</Link>
-                            </DropdownMenuItem>
-                          ))
-                        }
+                        {profileItems.map((item, index) => (
+                          <DropdownMenuItem key={index}>
+                            <Link to={item.to || ''}>{item.label}</Link>
+                          </DropdownMenuItem>
+                        ))}
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleLogout} className='p-0'>
-                        <Button variant="destructive" className='w-full cursor-pointer'>
+                      <DropdownMenuItem onClick={handleLogout} className="p-0">
+                        <Button
+                          variant="destructive"
+                          className="w-full cursor-pointer"
+                        >
                           {isLoading ? 'Logging out...' : 'Log out'}
                         </Button>
                       </DropdownMenuItem>
@@ -269,9 +282,10 @@ const Navbar = () => {
               <NavLink
                 to="/login"
                 className={({ isActive }) =>
-                  `duration-300 block p-2 rounded-md border transition-colors ${isActive
-                    ? 'bg-primary/20 border-primary'
-                    : 'bg-gray-800 border-transparent hover:border-primary hover:bg-gray-700'
+                  `duration-300 block p-2 rounded-md border transition-colors ${
+                    isActive
+                      ? 'bg-primary/20 border-primary'
+                      : 'bg-gray-800 border-transparent hover:border-primary hover:bg-gray-700'
                   }`
                 }
               >
@@ -287,22 +301,22 @@ const Navbar = () => {
                     </Avatar>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56" align="start">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuGroup>
-                      <DropdownMenuItem>
-                        Profile
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        Dashboard
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        Settings
-                      </DropdownMenuItem>
+                      {profileItems.map((item, index) => (
+                        <DropdownMenuItem key={index}>
+                          <Link to={item.to || ''}>{item.label}</Link>
+                        </DropdownMenuItem>
+                      ))}
                     </DropdownMenuGroup>
+
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout}>
-                      {isLoading ? 'Logging out...' : 'Log out'}
-                      <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                    <DropdownMenuItem onClick={handleLogout} className="p-0">
+                      <Button
+                        variant="destructive"
+                        className="w-full cursor-pointer"
+                      >
+                        {isLoading ? 'Logging out...' : 'Log out'}
+                      </Button>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -313,8 +327,9 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         <div
-          className={`lg:hidden transition-all duration-300 overflow-hidden ${isOpen ? 'max-h-96 pb-4' : 'max-h-0'
-            }`}
+          className={`lg:hidden transition-all duration-300 overflow-hidden ${
+            isOpen ? 'max-h-96 pb-4' : 'max-h-0'
+          }`}
         >
           <div className="space-y-1 pt-4 border-t border-gray-800">
             {/* Mobile Search */}
@@ -357,9 +372,10 @@ const Navbar = () => {
               <NavLink
                 to="/ship-now"
                 className={({ isActive }) =>
-                  `block w-full py-3 rounded-lg font-semibold transition-colors duration-300 text-center ${isActive
-                    ? 'bg-primary/80 text-white'
-                    : 'bg-primary text-white hover:bg-primary/90'
+                  `block w-full py-3 rounded-lg font-semibold transition-colors duration-300 text-center ${
+                    isActive
+                      ? 'bg-primary/80 text-white'
+                      : 'bg-primary text-white hover:bg-primary/90'
                   }`
                 }
                 onClick={() => setIsOpen(false)}

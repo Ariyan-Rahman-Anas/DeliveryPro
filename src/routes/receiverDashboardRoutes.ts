@@ -1,23 +1,26 @@
-import { Package} from "lucide-react";
+import { LayoutDashboard, Package } from "lucide-react";
 
 export const receiverDashboardRoutes = [
-    {
-      title: "Parcels",
-      url: "#",
-      icon: Package,
-      items: [
-        {
-          title: "Create Parcels",
-          url: "/dashboard/receiver/parcels/create",
-        },
-        {
-          title: "Parcels",
-          url: "/dashboard/receiver/parcels",
-        },
-        {
-          title: "My Parcels",
-          url: "/dashboard/receiver/my-parcels",
-        },
-      ],
-    },
-  ]
+  {
+    title: "Dashboard",
+    url: "#",
+    icon: LayoutDashboard,
+    items: [
+      {
+        title: "Overview",
+        url: "/dashboard/receiver/overview",
+      },
+    ],
+  },
+  {
+    title: "Parcels",
+    url: "#",
+    icon: Package,
+    items: [
+      {
+        title: "My Parcels",
+        url: "/dashboard/receiver/my-parcels",
+      },
+    ],
+  },
+]
