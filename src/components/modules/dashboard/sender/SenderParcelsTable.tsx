@@ -8,36 +8,39 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ParcelStatus } from '@/constants';
 import { loggedInUser } from '@/redux/features/auth/authSlice';
-import { useGetParcelsByUserIdQuery } from '@/redux/features/parcels/parcelApi';
-import { Edit, EllipsisVertical, Eye, Trash2 } from 'lucide-react';
+import { useGetParcelsBySenderIdQuery } from '@/redux/features/parcels/parcelApi';
+import { formatStatusLabel } from '@/utils/formatStatusLabel';
+import { EllipsisVertical, Eye } from 'lucide-react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router';
 
 const SenderParcelsTable = () => {
   const loggedInSender = useSelector(loggedInUser);
+  const [currentPage, setCurrentPage] = useState(1);
+  const dataLimitOnPerPage = 8;
+  const [statusFilter, setStatusFilter] = useState('');
+
   const { data: parcelsData, isLoading: isParcelsLoading } =
-    useGetParcelsByUserIdQuery(loggedInSender?._id);
+    useGetParcelsBySenderIdQuery(
+      {
+        id: loggedInSender?._id,
+        page: currentPage,
+        limit: dataLimitOnPerPage,
+        ...(statusFilter && { status: statusFilter }),
+      },
+      {
+        skip: !loggedInSender?._id,
+      }
+    );
   console.log({ parcelsData });
 
   const columns = [
     { key: 'trackingId', header: 'Tracking Id' },
     { key: 'type', header: 'Type' },
     { key: 'weightKg', header: 'Weight-(KG)' },
-    // {
-    //   key: 'time',
-    //   header: 'Time Period',
-    //   render: (parcel) => (
-    //     <div>
-    //       <p className="text-primary">
-    //         <span>Start:</span> {parcel.time?.start}
-    //       </p>
-    //       <p className="text-destructive">
-    //         <span>End:</span> {parcel.time?.end}
-    //       </p>
-    //     </div>
-    //   ),
-    // },
     { key: 'fee', header: 'Fee' },
     { key: 'status', header: 'Status' },
     { key: 'isCancelled', header: 'Cancelled' },
@@ -75,6 +78,7 @@ const SenderParcelsTable = () => {
             <div className="py-1 px-2 rounded-md bg-muted">
               <p>{log?.status}</p>
               <p>{log?.note}</p>
+              <p>{log?.at.slice(0, 10)}</p>
             </div>
           ))}
         </div>
@@ -106,28 +110,6 @@ const SenderParcelsTable = () => {
                     </Button>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="w-fit p-0 group">
-                  <Link to={`/dashboard/classes/edit/${parcel.id}`}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      // onClick={() => handleView(certificate)}
-                      className="h-8 w-fit p-0 text-gray-600 hover:text-primary hover:bg-primary/10 cursor-pointer"
-                      title="View"
-                    >
-                      <Edit className="h-4 w-4 group-hover:text-primary" />
-                      Edit
-                    </Button>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={(e) => e.preventDefault()}
-                  className="w-fit p-0 group"
-                >
-                  <Button>
-                    <Trash2 />
-                  </Button>
-                </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -136,17 +118,47 @@ const SenderParcelsTable = () => {
     },
   ];
 
-  const paginationOptions = {};
-  const handlePageChange = () => {};
+  const paginationOptions = {
+    count: parcelsData?.meta?.total,
+    current_page: parcelsData?.meta?.page,
+    next_page:
+      parcelsData?.meta?.page < parcelsData?.meta?.totalPages
+        ? parcelsData?.meta?.page + 1
+        : undefined,
+    num_pages: parcelsData?.meta?.totalPages,
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+  const handleStatusFilter = (status: string) => {
+    setStatusFilter(status);
+    setCurrentPage(1);
+  };
 
   return (
     <div>
+      {/* Optional: Add status filter */}
+      <div className="mb-4">
+        <select
+          value={statusFilter}
+          onChange={(e) => handleStatusFilter(e.target.value)}
+          className="px-3 py-2 border rounded-md"
+        >
+          <option value="">All Status</option>
+          {Object.values(ParcelStatus).map((status, idx) => (
+            <option key={idx} value={status}>
+              {formatStatusLabel(status)}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <DataTable
         data={parcelsData?.data}
         columns={columns}
         paginationOptions={paginationOptions}
-        // pageSize={itemsPerPage}
-        pageSize={5}
+        pageSize={parcelsData?.meta?.limit}
         onPageChange={handlePageChange}
         isLoading={isParcelsLoading}
         emptyMessage="No certificates found"
@@ -154,18 +166,4 @@ const SenderParcelsTable = () => {
     </div>
   );
 };
-
 export default SenderParcelsTable;
-
-//  {parcel.trainers.map((trainer, idx) => (
-//             <p
-//               key={idx}
-//               className={`w-fit px-4 py-1 font-semibold rounded-full ${
-//                 idx % 2 == 0
-//                   ? 'text-primary bg-primary/15'
-//                   : 'bg-green-500/15 text-green-500'
-//               }`}
-//             >
-//               {trainer}
-//             </p>
-//           ))}
