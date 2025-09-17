@@ -2,7 +2,7 @@ import SenderParcelsTable from '@/components/modules/dashboard/sender/SenderParc
 
 const MySentParcelsPage = () => {
   return (
-    <div>
+    <div className="pb-6">
       <SenderParcelsTable />
     </div>
   );

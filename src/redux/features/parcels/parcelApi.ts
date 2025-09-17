@@ -10,13 +10,14 @@ const parcelApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ["parcel"]
         }),
-        getParcelsByUserId: builder.query({
-            query: (id) => ({
-                url: `/parcel/my-sent/${id}`
+        getParcelsBySenderId: builder.query({
+            query: ({ id, ...params }) => ({
+                url: `/parcel/my-sent/${id}`,
+                params,
             }),
             providesTags: ["parcel"]
         })
     })
 })
 
-export const { useCreateParcelMutation, useGetParcelsByUserIdQuery } = parcelApi    
+export const { useCreateParcelMutation, useGetParcelsBySenderIdQuery } = parcelApi    
