@@ -248,10 +248,17 @@ const Navbar = () => {
                 <div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>CN</AvatarFallback>
-                      </Avatar>
+                      {isLoading ? (
+                        <div className="flex items-center justify-center space-x-2">
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+                          <span className="text-sm text-gray-500"></span>
+                        </div>
+                      ) : (
+                        <Avatar>
+                          <AvatarImage src="https://github.com/shadcn.png" />
+                          <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                      )}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="start">
                       <DropdownMenuGroup>
@@ -295,10 +302,17 @@ const Navbar = () => {
               <div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Avatar className="border-2 border-primary">
-                      <AvatarImage src="https://github.com/shadcn.png" />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
+                    {isLoading ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+                        <span className="text-sm text-gray-500"></span>
+                      </div>
+                    ) : (
+                      <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarFallback>CN</AvatarFallback>
+                      </Avatar>
+                    )}
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56" align="start">
                     <DropdownMenuGroup>

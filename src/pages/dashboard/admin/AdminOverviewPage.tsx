@@ -1,20 +1,181 @@
-// import React from 'react'
+import {
+  ArrowRight,
+  Building2,
+  Calendar,
+  CheckCircle,
+  Home,
+  MapPin,
+  Package,
+  RotateCcw,
+  Truck,
+  XCircle,
+} from 'lucide-react';
+import React, { useState } from 'react';
 
-// const AdminOverviewPage = () => {
-//   return (
-//     <div>AdminOverviewPage</div>
-//   )
-// }
+// Define the interface locally
+interface ParcelStatusInfo {
+  status: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+  nextStates: string[];
+  category:
+    | 'initial'
+    | 'processing'
+    | 'transit'
+    | 'final'
+    | 'cancelled'
+    | 'return';
+  position: { x: number; y: number };
+}
 
-// export default AdminOverviewPage
+// Parcel Status Configuration with positioning for flowchart
+const PARCEL_STATUSES: Record<string, ParcelStatusInfo> = {
+  REQUESTED: {
+    status: 'REQUESTED',
+    title: 'Requested',
+    description: 'Customer initiates delivery request',
+    icon: <Package className="w-4 h-4" />,
+    color: 'text-primary',
+    bgColor: 'bg-green-50',
+    borderColor: 'border-green-200',
+    nextStates: ['APPROVED', 'CANCELLED'],
+    category: 'initial',
+    position: { x: 0, y: 0 },
+  },
+  APPROVED: {
+    status: 'APPROVED',
+    title: 'Approved',
+    description: 'Request reviewed and accepted',
+    icon: <CheckCircle className="w-4 h-4" />,
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200',
+    nextStates: ['PICKUP_SCHEDULED', 'PICKED_UP', 'CANCELLED'],
+    category: 'processing',
+    position: { x: 0, y: 1 },
+  },
+  PICKUP_SCHEDULED: {
+    status: 'PICKUP_SCHEDULED',
+    title: 'Pickup Scheduled',
+    description: 'Pickup date confirmed',
+    icon: <Calendar className="w-4 h-4" />,
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200',
+    nextStates: ['PICKED_UP', 'CANCELLED'],
+    category: 'processing',
+    position: { x: 0, y: 2 },
+  },
+  PICKED_UP: {
+    status: 'PICKED_UP',
+    title: 'Picked Up',
+    description: 'Collected from sender',
+    icon: <Truck className="w-4 h-4" />,
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-50',
+    borderColor: 'border-amber-200',
+    nextStates: ['IN_TRANSIT', 'AT_HUB', 'RETURN_REQUESTED'],
+    category: 'transit',
+    position: { x: 0, y: 3 },
+  },
+  IN_TRANSIT: {
+    status: 'IN_TRANSIT',
+    title: 'In Transit',
+    description: 'Moving between locations',
+    icon: <MapPin className="w-4 h-4" />,
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-50',
+    borderColor: 'border-amber-200',
+    nextStates: ['AT_HUB', 'OUT_FOR_DELIVERY', 'RETURN_REQUESTED'],
+    category: 'transit',
+    position: { x: 0, y: 4 },
+  },
+  AT_HUB: {
+    status: 'AT_HUB',
+    title: 'At Hub',
+    description: 'At sorting facility',
+    icon: <Building2 className="w-4 h-4" />,
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-50',
+    borderColor: 'border-amber-200',
+    nextStates: ['OUT_FOR_DELIVERY', 'IN_TRANSIT', 'RETURN_REQUESTED'],
+    category: 'transit',
+    position: { x: 0, y: 5 },
+  },
+  OUT_FOR_DELIVERY: {
+    status: 'OUT_FOR_DELIVERY',
+    title: 'Out for Delivery',
+    description: 'Final mile delivery',
+    icon: <Home className="w-4 h-4" />,
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-50',
+    borderColor: 'border-amber-200',
+    nextStates: ['DELIVERED', 'RETURN_REQUESTED'],
+    category: 'transit',
+    position: { x: 0, y: 6 },
+  },
+  DELIVERED: {
+    status: 'DELIVERED',
+    title: 'Delivered',
+    description: 'Successfully delivered',
+    icon: <CheckCircle className="w-4 h-4" />,
+    color: 'text-primary',
+    bgColor: 'bg-green-50',
+    borderColor: 'border-green-200',
+    nextStates: [],
+    category: 'final',
+    position: { x: 0, y: 7 },
+  },
+  CANCELLED: {
+    status: 'CANCELLED',
+    title: 'Cancelled',
+    description: 'Request cancelled',
+    icon: <XCircle className="w-4 h-4" />,
+    color: 'text-red-600',
+    bgColor: 'bg-red-50',
+    borderColor: 'border-red-200',
+    nextStates: [],
+    category: 'cancelled',
+    position: { x: 2, y: 2 },
+  },
+  RETURN_REQUESTED: {
+    status: 'RETURN_REQUESTED',
+    title: 'Return Requested',
+    description: 'Return initiated',
+    icon: <RotateCcw className="w-4 h-4" />,
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-50',
+    borderColor: 'border-purple-200',
+    nextStates: ['RETURNED', 'IN_TRANSIT'],
+    category: 'return',
+    position: { x: 2, y: 5 },
+  },
+  RETURNED: {
+    status: 'RETURNED',
+    title: 'Returned',
+    description: 'Returned to sender',
+    icon: <RotateCcw className="w-4 h-4" />,
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-50',
+    borderColor: 'border-purple-200',
+    nextStates: [],
+    category: 'return',
+    position: { x: 2, y: 6 },
+  },
+};
 
-// Admin Flowchart Component
-const AdminParcelLifecycleChart: React.FC = () => {
+const AdminOverviewPage: React.FC = () => {
+  // Move state variables to the main component
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [hoveredConnection, setHoveredConnection] = useState<string | null>(
     null
   );
 
+  // FlowchartNode component
   const FlowchartNode: React.FC<{ status: ParcelStatusInfo }> = ({
     status,
   }) => {
@@ -27,11 +188,11 @@ const AdminParcelLifecycleChart: React.FC = () => {
     return (
       <div
         className={`
-          absolute bg-white rounded-lg border-2 p-3 cursor-pointer transition-all duration-300 w-40
+          absolute bg-white  rounded-lg border-2 p-3 cursor-pointer transition-all duration-300 w-40
           hover:shadow-lg hover:scale-105 hover:z-10
           ${
             isSelected
-              ? 'border-green-500 shadow-lg ring-2 ring-green-200 z-20'
+              ? 'border-primary shadow-lg ring-2 ring-green-200 z-20'
               : isConnected
               ? 'border-green-300 shadow-md'
               : status.borderColor
@@ -70,6 +231,7 @@ const AdminParcelLifecycleChart: React.FC = () => {
     );
   };
 
+  // ConnectionLine component
   const ConnectionLine: React.FC<{
     from: ParcelStatusInfo;
     to: ParcelStatusInfo;
@@ -92,9 +254,6 @@ const AdminParcelLifecycleChart: React.FC = () => {
       toCenter.y - fromCenter.y,
       toCenter.x - fromCenter.x
     );
-    const arrowSize = 8;
-    const arrowX = toCenter.x - Math.cos(angle) * 20;
-    const arrowY = toCenter.y - Math.sin(angle) * 20;
 
     return (
       <g>
@@ -120,7 +279,7 @@ const AdminParcelLifecycleChart: React.FC = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border-l-4 border-green-500">
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border-l-4 border-primary">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
             🚚 DeliveryPro - Parcel Lifecycle Chart
           </h1>
@@ -221,7 +380,7 @@ const AdminParcelLifecycleChart: React.FC = () => {
 
         {/* Selected Status Details */}
         {selectedStatus && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mt-6 border-l-4 border-green-500">
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-6 border-l-4 border-primary">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
               Status Details: {PARCEL_STATUSES[selectedStatus].title}
             </h3>
@@ -244,7 +403,7 @@ const AdminParcelLifecycleChart: React.FC = () => {
                         key={nextState}
                         className="flex items-center text-sm text-gray-600"
                       >
-                        <ArrowRight className="w-4 h-4 mr-2 text-green-600" />
+                        <ArrowRight className="w-4 h-4 mr-2 text-primary" />
                         {PARCEL_STATUSES[nextState].title}
                       </div>
                     )
@@ -263,3 +422,4 @@ const AdminParcelLifecycleChart: React.FC = () => {
     </div>
   );
 };
+export default AdminOverviewPage;
