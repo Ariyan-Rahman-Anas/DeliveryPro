@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 // Types
-interface ParcelStatusInfo {
+export interface ParcelStatusInfo {
   status: string;
   title: string;
   description: string;
