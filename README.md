@@ -1,69 +1,156 @@
-# React + TypeScript + Vite
+# 📦 DeliveryPro
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A secure, role-based, and user-friendly **DeliveryPro** frontend built with **React, Redux Toolkit, and RTK Query**.  
+This project provides parcel operations and management for **Senders, Receivers, and Admins** with a clean, responsive, and modern UI.
 
-Currently, two official plugins are available:
+🔗 **Live Demo**: [Frontend URL](https://parcel-delivery-pro.vercel.app) | [Backend API](https://your-parcel-delivery.vercel.app)  
+📽 **Demo Video**: [Watch here](https://your-demo-video-link.com)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🌐 Public Landing
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Home page with service intro
+- About page with mission & team info
+- Contact page with simulated inquiry form
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### 🔐 Authentication
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- JWT-based secure login & registration
+- Role-based access (Sender / Receiver / Admin)
+- Persisted login state with refresh
+- Logout functionality
+
+### 📮 Sender Dashboard
+
+- Create parcel delivery requests
+- Cancel parcels (if not dispatched)
+- View all created parcels with status logs
+
+### 📥 Receiver Dashboard
+
+- View incoming parcels
+- Confirm parcel delivery
+- Delivery history tracking
+
+### 🛠️ Admin Dashboard
+
+- Manage all users (block/unblock)
+- Manage all parcels (block/unblock, update delivery status)
+- Assign delivery personnel (optional)
+
+### 🔎 Parcel Tracking
+
+- Unique tracking ID for each parcel
+- Public search by tracking ID
+- Status logs with timestamp & updatedBy
+
+### 📊 General Features
+
+- Role-based navigation
+- Form validations & error handling
+- Pagination, filtering & search
+- Global loading & error states
+- Toast notifications
+- Charts & analytics dashboard
+- Fully responsive design
+
+---
+
+## 🛠️ Tech Stack
+
+**Frontend**
+
+- ⚛️ React + TypeScript
+- 🌀 Redux Toolkit + RTK Query
+- 🎨 Tailwind CSS
+- 🔔 React Toastify (or similar)
+
+**Backend**
+
+- 🟩 Node.js + Express
+- 🍃 MongoDB + Mongoose
+- 🔐 JWT + bcrypt
+
+---
+
+## ⚙️ Installation & Setup
+
+### 1️⃣ Clone the repo
+
+```bash
+git clone https://github.com/your-username/parcel-delivery-frontend.git
+cd parcel-delivery-frontend
+
+
+npm install
+
+
+VITE_API_BASE_URL=https://your-backend-url.com/api/v1
+
+
+npm run dev
+
+
+
+| Role     | Email                                         | Password |
+| -------- | --------------------------------------------- | -------- |
+| Admin    | [heyadmin@admin.com](mailto:heyadmin@admin.com)       | A1234!   |
+| Sender   | [heybro22@hey.com](mailto:heybro22@hey.com)     | A1234!   |
+| Receiver | [heybrorcv@receiver.com](mailto:heybrorcv@receiver.com) | A1234!   |
+
+
+📊 Dashboard Overview
+
+Overview Cards: Total parcels, Delivered, In Transit, Pending/Cancelled
+
+Charts: Bar & Pie charts showing trends
+
+Parcel Table: Paginated, searchable, filterable
+
+Status Timeline: Visual history of parcel updates
+
+
+
+✅ Best Practices Followed
+
+Modular & reusable components
+
+TypeScript for type safety
+
+RTK Query for API state management
+
+Toast notifications for feedback
+
+Responsive UI with Tailwind
+
+Role-based routing & guards
+
+Commit history with meaningful messages
+
+📜 Submission Guidelines
+
+ Clean, modular, documented codebase
+
+ README with overview, setup, stack, live URL
+
+ Separate frontend & backend repos
+
+ Live deployment (Frontend + Backend)
+
+ Demo video (5–10 min walkthrough)
+
+ Provided credentials for testing
+
+📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+Would you like me to also create a **backend `README.md`** in the same style so both repos look consistent?
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Built with ❤️ using React, TypeScript, and Redux Toolkit.

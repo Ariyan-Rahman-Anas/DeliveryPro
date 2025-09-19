@@ -129,7 +129,7 @@ const Navbar = () => {
         role === Role.ADMIN
           ? '/dashboard/admin/overview'
           : role === Role.SENDER
-          ? '/dashboard/sender/overview'
+          ? '/dashboard/sender/parcels'
           : role === Role.RECEIVER
           ? '/dashboard/receiver/overview'
           : ''
