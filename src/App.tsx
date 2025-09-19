@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router';
 import { lazy } from 'react';
+import NotFound from './pages/NotFound';
 
 const MainLayout = lazy(() => import('./components/modules/layout/MainLayout'));
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -38,6 +39,7 @@ const App = createBrowserRouter([
   {
     path: '/',
     Component: MainLayout,
+    errorElement: <NotFound />,
     children: [
       { path: '/', Component: HomePage },
       { path: '/login', Component: LoginPage },

@@ -92,15 +92,13 @@ VITE_API_BASE_URL=https://your-backend-url.com/api/v1
 
 
 npm run dev
+```
 
-
-
-| Role     | Email                                         | Password |
-| -------- | --------------------------------------------- | -------- |
-| Admin    | [heyadmin@admin.com](mailto:heyadmin@admin.com)       | A1234!   |
-| Sender   | [heybro22@hey.com](mailto:heybro22@hey.com)     | A1234!   |
+| Role     | Email                                                   | Password |
+| -------- | ------------------------------------------------------- | -------- |
+| Admin    | [heyadmin@admin.com](mailto:heyadmin@admin.com)         | A1234!   |
+| Sender   | [heybro22@hey.com](mailto:heybro22@hey.com)             | A1234!   |
 | Receiver | [heybrorcv@receiver.com](mailto:heybrorcv@receiver.com) | A1234!   |
-
 
 📊 Dashboard Overview
 
@@ -111,8 +109,6 @@ Charts: Bar & Pie charts showing trends
 Parcel Table: Paginated, searchable, filterable
 
 Status Timeline: Visual history of parcel updates
-
-
 
 ✅ Best Practices Followed
 
@@ -132,17 +128,17 @@ Commit history with meaningful messages
 
 📜 Submission Guidelines
 
- Clean, modular, documented codebase
+Clean, modular, documented codebase
 
- README with overview, setup, stack, live URL
+README with overview, setup, stack, live URL
 
- Separate frontend & backend repos
+Separate frontend & backend repos
 
- Live deployment (Frontend + Backend)
+Live deployment (Frontend + Backend)
 
- Demo video (5–10 min walkthrough)
+Demo video (5–10 min walkthrough)
 
- Provided credentials for testing
+Provided credentials for testing
 
 📄 License
 
@@ -151,6 +147,5 @@ This project is licensed under the MIT License.
 ---
 
 Would you like me to also create a **backend `README.md`** in the same style so both repos look consistent?
-```
 
 Built with ❤️ using React, TypeScript, and Redux Toolkit.
