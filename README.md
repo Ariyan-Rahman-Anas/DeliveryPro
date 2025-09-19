@@ -3,10 +3,7 @@
 A secure, role-based, and user-friendly **DeliveryPro** frontend built with **React, Redux Toolkit, and RTK Query**.  
 This project provides parcel operations and management for **Senders, Receivers, and Admins** with a clean, responsive, and modern UI.
 
-🔗 **Live Demo**: [Frontend URL](https://parcel-delivery-pro.vercel.app) | [Backend API](https://your-parcel-delivery.vercel.app)  
-📽 **Demo Video**: [Watch here](https://your-demo-video-link.com)
-
----
+## 🔗 **Live Demo**: [Frontend URL](https://parcel-delivery-pro.vercel.app) | [Backend API](https://your-parcel-delivery.vercel.app)
 
 ## 🚀 Features
 
