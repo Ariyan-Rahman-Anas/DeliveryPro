@@ -284,7 +284,11 @@ const Footer = () => {
         </div>
         <div className="flex items-center justify-center gap-1 pb-1 font-semibold text-sm">
           <p>Developed by</p>
-          <Link to="/" className="text-primary">
+          <Link
+            to="https://ariyanrahmananas.vercel.app"
+            target="_blank"
+            className="text-primary"
+          >
             Ariyan Rahman Anas
           </Link>
         </div>
