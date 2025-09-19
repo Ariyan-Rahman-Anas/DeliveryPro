@@ -32,6 +32,7 @@ const ReceiverOverviewPage = lazy(
 const AllUserPage = lazy(
   () => import('./pages/dashboard/admin/users/AllUserPage')
 );
+const ParcelDetailsPage = lazy(() => import('./pages/ParcelDetailsPage'));
 
 const App = createBrowserRouter([
   {
@@ -44,6 +45,7 @@ const App = createBrowserRouter([
       { path: '/', Component: HomePage },
       { path: '/about', Component: AboutPage },
       { path: '/contact', Component: ContactPage },
+      { path: '/parcel/:id', Component: ParcelDetailsPage },
     ],
   },
   {

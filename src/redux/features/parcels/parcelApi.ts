@@ -60,8 +60,31 @@ const parcelApi = baseApi.injectEndpoints({
                 method: "PATCH"
             }),
             invalidatesTags: ["parcel"]
+        }),
+        parcelTracking: builder.query({
+            query: (id) => ({
+                url: `/parcel/track/${id}`
+            }),
+            providesTags: ["parcel"]
+        }),
+        getParcelByParcelId: builder.query({
+            query: (id) => ({
+                url: `/parcel/${id}`
+            }),
+            providesTags: ["parcel"]
         })
     })
 })
 
-export const { useCreateParcelMutation, useGetParcelsBySenderIdQuery, useParcelCancellationMutation, useGetParcelsByReceiverIdQuery, useConfirmParcelDeliveryMutation, useGetAllParcelQuery, useChangeParcelStatusMutation, useBlockUnblockParcelMutation } = parcelApi    
+export const {
+    useCreateParcelMutation,
+    useGetParcelsBySenderIdQuery,
+    useParcelCancellationMutation,
+    useGetParcelsByReceiverIdQuery,
+    useConfirmParcelDeliveryMutation,
+    useGetAllParcelQuery,
+    useChangeParcelStatusMutation,
+    useBlockUnblockParcelMutation,
+    useParcelTrackingQuery,
+    useGetParcelByParcelIdQuery
+} = parcelApi    

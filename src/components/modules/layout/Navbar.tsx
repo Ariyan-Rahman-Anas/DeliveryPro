@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,8 +18,14 @@ import {
   ArrowRight,
   User,
   Search,
+  Package,
+  MapPin,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Loader2,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink, useNavigate } from 'react-router';
 import type { NavLinkPropsI } from '@/types';
@@ -27,15 +34,31 @@ import { toast } from 'sonner';
 import Logo from '@/components/common/Logo';
 import { Role } from '@/constants';
 import { Button } from '@/components/ui/button';
+import { useParcelTrackingQuery } from '@/redux/features/parcels/parcelApi';
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [trackingId, setTrackingId] = useState('');
+  const [searchTrackingId, setSearchTrackingId] = useState('');
+  const [showResults, setShowResults] = useState(false);
 
   const { name, email, role } = useSelector(loggedInUser) || {};
 
   const [userLogout, { isLoading }] = useUserLogoutMutation();
+
+  // Use the tracking query - only when searchTrackingId is set
+  const {
+    data: trackedParcelData,
+    isLoading: isTracking,
+    error: trackingError,
+  } = useParcelTrackingQuery(searchTrackingId, {
+    skip: !searchTrackingId,
+  });
+
+  const trackingData = trackedParcelData?.data;
+  console.log({ trackingData });
 
   const handleLogout = async () => {
     try {
@@ -43,14 +66,42 @@ const Navbar = () => {
       dispatch(removeUser());
       toast.success(logoutRes.data.message);
       navigate('/login');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error?.data?.message);
     }
   };
 
   const toggleMenu = () => setIsOpen(!isOpen);
-  // const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
+
+  // Handle input change
+  const handleInputChange = useCallback(
+    (e: any) => {
+      setTrackingId(e.target.value);
+      // Hide results when typing
+      if (showResults) {
+        setShowResults(false);
+      }
+    },
+    [showResults]
+  );
+
+  // Handle Enter key press
+  const handleKeyDown = useCallback(
+    (e: any) => {
+      if (e.key === 'Enter' && trackingId.trim()) {
+        e.preventDefault();
+        setSearchTrackingId(trackingId.trim());
+        setShowResults(true);
+      }
+    },
+    [trackingId]
+  );
+
+  // Close search results
+  const closeResults = useCallback(() => {
+    setShowResults(false);
+    setSearchTrackingId('');
+  }, []);
 
   // Navigation items configuration
   const navItems = [
@@ -89,7 +140,6 @@ const Navbar = () => {
   ];
 
   // Custom NavLink component with active state
-
   const CustomNavLink = ({
     to,
     children,
@@ -141,18 +191,6 @@ const Navbar = () => {
     >
       {children}
     </NavLink>
-  );
-
-  // Search Input component
-  const SearchInput = ({ className = '' }: { className?: string }) => (
-    <div className={`relative ${className}`}>
-      <input
-        type="text"
-        placeholder="Track package..."
-        className="bg-gray-800 text-white px-4 py-2 pl-10 rounded-lg border border-gray-700 focus:outline-none focus:border-primary focus:bg-gray-700 transition-all duration-300 w-full"
-      />
-      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-    </div>
   );
 
   return (
@@ -227,7 +265,115 @@ const Navbar = () => {
           {/* Right Side Actions */}
           <div className="hidden lg:flex items-center space-x-4">
             {/* Search */}
-            <SearchInput />
+            <div className="relative">
+              <input
+                value={trackingId}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                type="text"
+                placeholder="Track package..."
+                className="bg-gray-800 text-white px-4 py-2 pl-10 rounded-lg border border-gray-700 focus:outline-none focus:border-primary focus:bg-gray-700 transition-all duration-300 w-full"
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+
+              {/* Search Results */}
+              {showResults && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 z-50 w-96">
+                  {isTracking ? (
+                    <div className="p-6 text-center">
+                      <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-primary" />
+                      <p className="text-gray-600">Tracking your package...</p>
+                    </div>
+                  ) : trackingError ? (
+                    <div className="p-6 text-center">
+                      <XCircle className="w-8 h-8 mx-auto mb-2 text-red-500" />
+                      <p className="text-red-600 font-medium">
+                        Package not found
+                      </p>
+                      <p className="text-gray-500 text-sm mt-1">
+                        Please check your tracking ID and try again
+                      </p>
+                      <button
+                        onClick={closeResults}
+                        className="mt-3 text-primary hover:text-primary/80 text-sm"
+                      >
+                        Close
+                      </button>
+                    </div>
+                  ) : trackingData ? (
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                          <Package className="w-5 h-5 text-primary" />
+                          <h3 className="font-semibold text-gray-900">
+                            Tracking ID: {searchTrackingId}
+                          </h3>
+                        </div>
+                        <button
+                          onClick={closeResults}
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                          <CheckCircle className="w-5 h-5 text-green-500" />
+                          <div>
+                            <p className="font-medium text-green-900">
+                              {trackingData.status || 'In Transit'}
+                            </p>
+                            <p className="text-green-700 text-sm">
+                              {trackingData.statusMessage ||
+                                'Package is on the way'}
+                            </p>
+                          </div>
+                        </div>
+
+                        {trackingData.currentLocation && (
+                          <div className="flex items-center gap-3">
+                            <MapPin className="w-5 h-5 text-gray-400" />
+                            <div>
+                              <p className="font-medium text-gray-900">
+                                Current Location
+                              </p>
+                              <p className="text-gray-600 text-sm">
+                                {trackingData.currentLocation}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {trackingData.estimatedDelivery && (
+                          <div className="flex items-center gap-3">
+                            <Clock className="w-5 h-5 text-gray-400" />
+                            <div>
+                              <p className="font-medium text-gray-900">
+                                Estimated Delivery
+                              </p>
+                              <p className="text-gray-600 text-sm">
+                                {trackingData.estimatedDelivery}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mt-4 pt-4 border-t border-gray-100">
+                        <Link
+                          to={`/parcel/${trackingData?._id}`}
+                          className="text-primary hover:text-primary/80 text-sm font-medium"
+                          onClick={closeResults}
+                        >
+                          View detailed tracking →
+                        </Link>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
 
             {/* Profile Dropdown */}
             <div className="relative">
@@ -347,8 +493,89 @@ const Navbar = () => {
         >
           <div className="space-y-1 pt-4 border-t border-gray-800">
             {/* Mobile Search */}
-            <div className="px-2 pb-4">
-              <SearchInput />
+            <div className="px-2 pb-4 relative">
+              <input
+                value={trackingId}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                type="text"
+                placeholder="Track package..."
+                className="bg-gray-800 text-white px-4 py-2 pl-10 rounded-lg border border-gray-700 focus:outline-none focus:border-primary focus:bg-gray-700 transition-all duration-300 w-full"
+              />
+              <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+
+              {/* Mobile Search Results */}
+              {showResults && (
+                <div className="absolute top-full left-2 right-2 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                  {isTracking ? (
+                    <div className="p-6 text-center">
+                      <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-primary" />
+                      <p className="text-gray-600">Tracking your package...</p>
+                    </div>
+                  ) : trackingError ? (
+                    <div className="p-6 text-center">
+                      <XCircle className="w-8 h-8 mx-auto mb-2 text-red-500" />
+                      <p className="text-red-600 font-medium">
+                        Package not found
+                      </p>
+                      <p className="text-gray-500 text-sm mt-1">
+                        Please check your tracking ID and try again
+                      </p>
+                      <button
+                        onClick={closeResults}
+                        className="mt-3 text-primary hover:text-primary/80 text-sm"
+                      >
+                        Close
+                      </button>
+                    </div>
+                  ) : trackingData ? (
+                    <div className="p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                          <Package className="w-4 h-4 text-primary" />
+                          <h3 className="font-semibold text-gray-900 text-sm">
+                            ID: {searchTrackingId}
+                          </h3>
+                        </div>
+                        <button
+                          onClick={closeResults}
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
+                          <CheckCircle className="w-4 h-4 text-green-500" />
+                          <div>
+                            <p className="font-medium text-green-900 text-sm">
+                              {trackingData.status || 'In Transit'}
+                            </p>
+                            <p className="text-green-700 text-xs">
+                              {trackingData.statusMessage ||
+                                'Package is on the way'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="pt-2 border-t border-gray-100">
+                          <Link
+                            to={`/tracking/${trackingData?._id}`}
+                            className="text-primary hover:text-primary/80 text-sm font-medium"
+                            onClick={() => {
+                              closeResults();
+                              setIsOpen(false);
+                            }}
+                          >
+                            View detailed tracking →
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              )}
             </div>
 
             {/* Mobile Nav Items */}
@@ -403,4 +630,5 @@ const Navbar = () => {
     </nav>
   );
 };
+
 export default Navbar;
