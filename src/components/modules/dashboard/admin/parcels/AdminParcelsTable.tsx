@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import { ParcelStatus } from '@/constants';
 import { loggedInUser } from '@/redux/features/auth/authSlice';
 import {
+  useBlockUnblockParcelMutation,
   useChangeParcelStatusMutation,
   useGetAllParcelQuery,
 } from '@/redux/features/parcels/parcelApi';
@@ -73,6 +74,19 @@ const AdminParcelsTable = () => {
       toast.success(parcelStatusChangeRes?.message);
       reset();
       setDialogOpen(false);
+    } catch (error: any) {
+      toast.error(error?.data?.message);
+    }
+  };
+
+  const [unblockUnblockParcel, { isLoading: isBlockUnblocking }] =
+    useBlockUnblockParcelMutation();
+  const handleBlockUnblockParcel = async (blockUnblockParcelId: string) => {
+    try {
+      const blockUnblockRes = await unblockUnblockParcel(
+        blockUnblockParcelId
+      ).unwrap();
+      toast.success(blockUnblockRes?.message);
     } catch (error: any) {
       toast.error(error?.data?.message);
     }
@@ -174,7 +188,7 @@ const AdminParcelsTable = () => {
       className: 'text-center',
       render: (parcel: any) => {
         return (
-          <div className="flex items-center justify-center">
+          <div className="flex flex-col gap-y-2 items-center justify-center">
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
                 <Button
@@ -185,11 +199,12 @@ const AdminParcelsTable = () => {
                     setParcelId(parcel?._id);
                     setSelectedParcel(parcel);
                     setDialogOpen(true);
-                    reset(); // Reset form when opening dialog
+                    reset();
                   }}
                   disabled={
                     parcel.status === 'DELIVERED' ||
-                    parcel.status === 'CANCELLED'
+                    parcel.status === 'CANCELLED' ||
+                    parcel?.isBlocked === true
                   }
                 >
                   Update
@@ -323,6 +338,19 @@ const AdminParcelsTable = () => {
                 </form>
               </DialogContent>
             </Dialog>
+            <Button
+              disabled={
+                isBlockUnblocking ||
+                parcel?.status === 'CANCELLED' ||
+                parcel?.status === 'DELIVERED'
+              }
+              onClick={() => handleBlockUnblockParcel(parcel?._id)}
+              className={`${
+                parcel?.isBlocked === true ? '' : 'bg-destructive'
+              }`}
+            >
+              {parcel?.isBlocked === true ? 'Unblock' : 'Block'}
+            </Button>
           </div>
         );
       },

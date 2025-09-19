@@ -53,8 +53,15 @@ const parcelApi = baseApi.injectEndpoints({
                 body: updatedData
             }),
             invalidatesTags: ["parcel"]
+        }),
+        blockUnblockParcel: builder.mutation({
+            query: (id) => ({
+                url: `/parcel/is-blocked/${id}`,
+                method: "PATCH"
+            }),
+            invalidatesTags: ["parcel"]
         })
     })
 })
 
-export const { useCreateParcelMutation, useGetParcelsBySenderIdQuery, useParcelCancellationMutation, useGetParcelsByReceiverIdQuery, useConfirmParcelDeliveryMutation, useGetAllParcelQuery, useChangeParcelStatusMutation } = parcelApi    
+export const { useCreateParcelMutation, useGetParcelsBySenderIdQuery, useParcelCancellationMutation, useGetParcelsByReceiverIdQuery, useConfirmParcelDeliveryMutation, useGetAllParcelQuery, useChangeParcelStatusMutation, useBlockUnblockParcelMutation } = parcelApi    
