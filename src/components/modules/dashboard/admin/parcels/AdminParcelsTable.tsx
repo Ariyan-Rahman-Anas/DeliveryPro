@@ -29,21 +29,34 @@ import {
   useGetAllParcelQuery,
 } from '@/redux/features/parcels/parcelApi';
 import { formatStatusLabel } from '@/utils/formatStatusLabel';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
+import { Search, X } from 'lucide-react';
 
 const AdminParcelsTable = () => {
   const loggedInSender = useSelector(loggedInUser);
   const [currentPage, setCurrentPage] = useState(1);
   const dataLimitOnPerPage = 8;
   const [statusFilter, setStatusFilter] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [parcelId, setParcelId] = useState('');
   const [selectedParcel, setSelectedParcel] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const { register, reset, handleSubmit, setValue, watch } = useForm();
+
+  // Debounce search query to avoid too many API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+      setCurrentPage(1);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const { data: parcelsData, isLoading: isParcelsLoading } =
     useGetAllParcelQuery(
@@ -51,6 +64,7 @@ const AdminParcelsTable = () => {
         page: currentPage,
         limit: dataLimitOnPerPage,
         ...(statusFilter && { status: statusFilter }),
+        ...(debouncedSearchQuery && { search: debouncedSearchQuery }),
       },
       {
         skip: !loggedInSender?._id,
@@ -81,6 +95,7 @@ const AdminParcelsTable = () => {
 
   const [unblockUnblockParcel, { isLoading: isBlockUnblocking }] =
     useBlockUnblockParcelMutation();
+
   const handleBlockUnblockParcel = async (blockUnblockParcelId: string) => {
     try {
       const blockUnblockRes = await unblockUnblockParcel(
@@ -90,6 +105,31 @@ const AdminParcelsTable = () => {
     } catch (error: any) {
       toast.error(error?.data?.message);
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleStatusFilter = (status: string) => {
+    setStatusFilter(status);
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery('');
+    setDebouncedSearchQuery('');
+  };
+
+  const clearAllFilters = () => {
+    setSearchQuery('');
+    setDebouncedSearchQuery('');
+    setStatusFilter('');
+    setCurrentPage(1);
   };
 
   const columns = [
@@ -367,31 +407,104 @@ const AdminParcelsTable = () => {
     num_pages: parcelsData?.meta?.totalPages,
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handleStatusFilter = (status: string) => {
-    setStatusFilter(status);
-    setCurrentPage(1);
-  };
-
   return (
     <div>
-      <div className="mb-4">
-        <select
-          value={statusFilter}
-          onChange={(e) => handleStatusFilter(e.target.value)}
-          className="px-3 py-2 border rounded-md"
-        >
-          <option value="">All Status</option>
-          {Object.values(ParcelStatus).map((status, idx) => (
-            <option key={idx} value={status}>
-              {formatStatusLabel(status)}
-            </option>
-          ))}
-        </select>
+      {/* Search and Filter Section */}
+      <div className="mb-4 space-y-4">
+        {/* Search Input */}
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-4 w-4 text-gray-400" />
+          </div>
+          <Input
+            type="text"
+            placeholder="Search by tracking ID, sender, receiver, phone..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            className="pl-10 pr-10"
+          />
+          {searchQuery && (
+            <button
+              onClick={clearSearch}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            >
+              <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+            </button>
+          )}
+        </div>
+
+        {/* Filters Row */}
+        <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex items-center gap-2">
+            <label htmlFor="status-filter" className="text-sm font-medium">
+              Status:
+            </label>
+            <select
+              id="status-filter"
+              value={statusFilter}
+              onChange={(e) => handleStatusFilter(e.target.value)}
+              className="px-3 py-2 border rounded-md min-w-[150px]"
+            >
+              <option value="">All Status</option>
+              {Object.values(ParcelStatus).map((status, idx) => (
+                <option key={idx} value={status}>
+                  {formatStatusLabel(status)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Clear Filters Button */}
+          {(searchQuery || statusFilter) && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={clearAllFilters}
+              className="flex items-center gap-2"
+            >
+              <X className="h-4 w-4" />
+              Clear Filters
+            </Button>
+          )}
+        </div>
+
+        {/* Active Filters Display */}
+        {(debouncedSearchQuery || statusFilter) && (
+          <div className="flex flex-wrap gap-2">
+            {debouncedSearchQuery && (
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                Search: "{debouncedSearchQuery}"
+                <button
+                  onClick={clearSearch}
+                  className="hover:bg-blue-200 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            )}
+            {statusFilter && (
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                Status: {formatStatusLabel(statusFilter)}
+                <button
+                  onClick={() => handleStatusFilter('')}
+                  className="hover:bg-green-200 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Results Info */}
+      {parcelsData?.meta && (
+        <div className="mb-4 text-sm text-gray-600">
+          Showing {parcelsData.data?.length || 0} of {parcelsData.meta.total}{' '}
+          parcels
+          {(debouncedSearchQuery || statusFilter) && ' (filtered)'}
+        </div>
+      )}
 
       <DataTable
         data={parcelsData?.data}
@@ -400,9 +513,14 @@ const AdminParcelsTable = () => {
         pageSize={parcelsData?.meta?.limit}
         onPageChange={handlePageChange}
         isLoading={isParcelsLoading}
-        emptyMessage="No certificates found"
+        emptyMessage={
+          debouncedSearchQuery || statusFilter
+            ? 'No parcels found matching your search criteria'
+            : 'No parcels found'
+        }
       />
     </div>
   );
 };
+
 export default AdminParcelsTable;

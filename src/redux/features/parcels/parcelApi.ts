@@ -40,10 +40,20 @@ const parcelApi = baseApi.injectEndpoints({
             invalidatesTags: ["parcel"]
         }),
         getAllParcel: builder.query({
-            query: (params) => ({
-                url: "/parcel",
-                params
-            }),
+            query: ({ page = 1, limit = 10, status, search, ...otherParams }) => {
+                const params = {
+                    page,
+                    limit,
+                    ...(status && { status }),
+                    ...(search && { search }),
+                    ...otherParams
+                };
+
+                return {
+                    url: "/parcel",
+                    params
+                };
+            },
             providesTags: ["parcel"]
         }),
         changeParcelStatus: builder.mutation({
