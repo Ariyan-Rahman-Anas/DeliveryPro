@@ -15,7 +15,7 @@ const ParcelCreatePage = lazy(
   () => import('./pages/dashboard/sender/ParcelCreatePage')
 );
 const AllParcelsPage = lazy(
-  () => import('./pages/dashboard/admin/AllParcelsPage')
+  () => import('./pages/dashboard/admin/parcels/AllParcelsPage')
 );
 const MyParcelsPage = lazy(
   () => import('./pages/dashboard/receiver/MyParcelsPage')
